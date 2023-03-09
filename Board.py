@@ -6,6 +6,13 @@ class Player(Enum):
     BLACK = 2
     NONE = 0
 
+class Piece(Enum):
+    BLACK_PIECE = 1
+    WHITE_PIECE = 2
+    BLACK_KING = 0
+    WHITE_KING = 0
+    EMPTY = 0
+
 class Board:
     def __init__(self):
         self.board = np.array(8,8)
