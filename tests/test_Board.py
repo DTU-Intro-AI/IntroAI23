@@ -18,3 +18,13 @@ class TestBoard(unittest.TestCase):
         test = game.board[3][2]
         print("test")
         self.assertEqual(test, Pieces.EMPTY)
+    
+    def test_valid_move(self):
+        '''WIP'''
+        game = Checkers()
+        game._create_place_piece("b",(2,1))
+        game._create_place_piece("w", (3,2))
+        game.move((2,1),(4,3))
+        test = game.board[3][2]
+        print("test")
+        self.assertEqual(test, Pieces.EMPTY)
