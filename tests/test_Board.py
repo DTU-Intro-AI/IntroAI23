@@ -12,11 +12,12 @@ class TestBoard(unittest.TestCase):
 
     def test_move(self):
         game = Checkers()
-        game._create_place_piece("w",(2,1))
-        game._create_place_piece("b", (3,2))
-        game.move((3,2), (1,0))
-        test = game.board[1][0]
-        print("test")
+        game._create_place_piece("b", (2, 1))
+        game._create_place_piece("w", (3, 2))
+        game.validMove((2, 1), (4, 3))
+        game.move((2, 1), [(4, 3)])
+        game.printBoard()
+        test = game.board[3][2]
         self.assertEqual(test, Pieces.EMPTY)
     
     def test_valid_move(self):
@@ -32,7 +33,7 @@ class TestBoard(unittest.TestCase):
         game._setupBoard("pieces")
         with self.assertRaises(ValueError):
             game.validMove((0,0),(4,3))
-    
+
     # tries to move other player's piece
     def test_valid_jump(self):
         game = Checkers()

@@ -1,8 +1,8 @@
 import numpy as np
 from enum import Enum
 import math
-import emoji
-import regex
+# import emoji
+# import regex
 
 BOARD_DIM = 8
 
@@ -21,12 +21,13 @@ class Pieces(Enum):
 class Checkers:
     def __init__(self):
         self.board = [[Pieces.EMPTY for _ in range(BOARD_DIM)] for _ in range(BOARD_DIM)]
+        self._setupBoard("clear")
         self.turn = Player.BLACK
         self.game_ended = False
         self.win = Player.NONE
 
     def _create_place_piece(self, player, cord):
-        if player.lower() == "w":
+        if player == "w":
             self.board[cord[0]][cord[1]] = Pieces.WHITE
         else:
             self.board[cord[0]][cord[1]] = Pieces.BLACK
@@ -48,17 +49,23 @@ class Checkers:
         elif init_type.lower() == "clear":
             for i in range(BOARD_DIM):
                 for j in range(BOARD_DIM):
-                    self.board = Pieces.EMPTY
+                    self.board[i][j] = Pieces.EMPTY
         
         else:
             raise ValueError
 
     def printBoard(self):
         print(" -------------------------------------------------")
-        for row in self.board:
+        for i, row in enumerate(self.board):
             print(" | ", end="")
-            for col in row:
-                print(col.value, end=" | ")
+            for j, col in enumerate(row):
+                col_value = col.value
+                if col == Pieces.EMPTY:
+                    if (i+j) % 2:
+                        col_value = " X "
+                    else:
+                        col_value = " O "
+                print(col_value, end=" | ")
             print("\n -------------------------------------------------")
 
     def isFinished(self):
@@ -76,7 +83,7 @@ class Checkers:
     def possibleMoves(self, cord):
         if (not self.onBoard(cord)):
             raise ValueError("Board index out of range")
-        
+
         x, y = cord
         opponents = [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]
         player_multiplier = -1 if self.turn == Player.BLACK else 1 # for the player move direction
@@ -136,7 +143,7 @@ class Checkers:
 
         self.board[from_cord[0]][from_cord[1]] = Pieces.EMPTY
         last_cord = from_cord
-        board_copy = self.board.copy
+        board_copy = self.board.copy()
         for current_cord in to_cord:
             try: 
                 self.validMove(from_cord, to_cord)
@@ -144,9 +151,13 @@ class Checkers:
                 print(e)
                 self.board = board_copy
 
-            if abs(last_cord[0]-to_cord[0]) > 1 and abs(last_cord[1]-to_cord[1]) > 1:
-                self.board[int(last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0])][int(last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1])] = Pieces.EMPTY
-                self.board[current_cord][current_cord] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
+            x_last, y_last = last_cord
+            x_to, y_to = current_cord
+            if abs(x_last-x_to) > 1 and abs(y_last-y_to) > 1:
+                index_x = int(last_cord[0] + abs(current_cord[0]-last_cord[0])/(current_cord[0]-last_cord[0]))
+                index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
+                self.board[index_x][index_y] = Pieces.EMPTY
+                self.board[x_to][y_to] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
 
             last_cord = current_cord
             ## Update game state with function?
