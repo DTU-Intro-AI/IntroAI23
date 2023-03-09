@@ -5,7 +5,7 @@ import math
 BOARD_DIM = 8
 
 class Player(Enum):
-    RED = 1
+    WHITE = 1
     BLACK = 2
     NONE = 0
 
@@ -22,6 +22,8 @@ class Checkers:
         self.turn = Player.BLACK
         self.game_ended = False
         self.win = Player.NONE
+        self.black_pieces = 12
+        self.white_pieces = 12
 
     def _create_place_piece(player, cord):
         if player.Lower == "w":
@@ -61,23 +63,23 @@ class Checkers:
         """
         from_x, from_y = from_cord
         to_x, to_y = to_cord
+        # check that from_cord and to_cord are in range (0-7)
+        if (from_x not in valid_range or from_y not in valid_range or to_x not in valid_range or to_y not in valid_range):
+            raise ValueError("Board index out of range")
+        # check that to_cord is unoccupied
+        if (self.board[to_x][to_y] != Pieces.EMPTY):
+            raise ValueError("Trying to move to an occupied field")
+        
+        move_piece = self.board[from_x][from_y]
         valid_range = range(0,BOARD_DIM-1)
         last_cord = from_cord
         opponents = [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]
         player_multiplier = 1 if self.turn == Player.BLACK else -1 # for the player move direction
 
-
-        # check that from_cord and to_cord are in range (0-7)
-        if (from_x not in valid_range or from_y not in valid_range or to_x not in valid_range or to_y not in valid_range):
-            raise Exception("Board index out of range")
-        # check that to_cord is unoccupied
-        if (self.board[to_x][to_y] != Pieces.EMPTY):
-            raise Exception("Trying to move to an occupied field")
-
         # check that to_cord is a coordinate the piece is able to move
 
         # kings can move to any diagonals
-        if (self.turn == Player.BLACK_KING or self.turn == Player.WHITE_KING):
+        if (move_piece == Player.BLACK_KING or move_piece == Player.WHITE_KING):
             # single move
             if (math.abs(from_x - to_x) == 1 and math.abs(from_y - to_y) == 1):
                 return True
@@ -93,7 +95,7 @@ class Checkers:
                 return False
                 
         # checks if the direction of the move is correct
-        if (self.turn == Player.BLACK):
+        elif (move_piece == Player.BLACK or move_piece == Player.WHITE):
             # single move
             if (from_x - to_x == 1 * player_multiplier and math.abs(from_y - to_y) == 1):
                 return True
@@ -107,10 +109,9 @@ class Checkers:
                     return False
             else:
                 return False
-            
         
-
-        pass
+        else:
+            return False
 
     def move(self, from_cord, to_cord):
         """
@@ -118,15 +119,27 @@ class Checkers:
         :param to_cord: list of tuples (x, y) Where you are going. In case of multiple jumps in one turn, provide list of coordinate tuples
         """
 
-        if self.validMove:
-            self.board[from_cord[0]][from_cord[1]] = Pieces.EMPTY
-            last_cord = from_cord
-            for current_cord in to_cord:
-                if abs(last_cord[0]-to_cord[0]) > 1 and abs(last_cord[1]-to_cord[1]) > 1:
-                    self.board[last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0]][last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1]] = Pieces.EMPTY
-                    self.board[current_cord][current_cord] = Pieces.BLACK if self.turn == Player.Black else Pieces.WHITE
+        self.board[from_cord[0]][from_cord[1]] = Pieces.EMPTY
+        last_cord = from_cord
+        board_copy = self.board.copy
+        for current_cord in to_cord:
+            try: 
+                self.validMove(from_cord, to_cord)
+            except ValueError as e:
+                print(e)
+                self.board = board_copy
 
-                last_cord = current_cord
+            if abs(last_cord[0]-to_cord[0]) > 1 and abs(last_cord[1]-to_cord[1]) > 1:
+                self.board[last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0]][last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1]] = Pieces.EMPTY
+                self.board[current_cord][current_cord] = Pieces.BLACK if self.turn == Player.Black else Pieces.WHITE
+
+            last_cord = current_cord
+            ## Update game state with function?
+        if not self.game_ended:
+            self.turn = Player.BLACK if self.turn == Player.WHITE else Player.WHITE
+
+
+            
             
         
         

@@ -15,4 +15,6 @@ class TestBoard(unittest.TestCase):
         game._create_place_piece("b",(2,1))
         game._create_place_piece("w", (3,2))
         game.move((2,1),(4,3))
-        self.assertEqual(game.board[3][2], Pieces.EMPTY)
+        test = game.board[3][2]
+        print("test")
+        self.assertEqual(test, Pieces.EMPTY)
