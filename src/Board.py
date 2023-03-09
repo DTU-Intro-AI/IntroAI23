@@ -81,10 +81,12 @@ class Checkers:
                 return True
             # jump over one player and land on empty space
             if (math.abs(from_x - to_x) == 2 and math.abs(from_y - to_y) == 2):
-                # check for opponent
+                # check intermediate piece is an opponent
                 intermediate_piece = self.board[last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0]][last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1]]
                 if (intermediate_piece in opponents):
                     return True
+                else:
+                    return False
             
 
                 
