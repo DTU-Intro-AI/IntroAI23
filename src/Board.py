@@ -55,7 +55,8 @@ class Checkers:
             raise ValueError
 
     def printBoard(self):
-        print(" -------------------------------------------------")
+        print("\n")
+        print(" ---0-----1-----2-----3-----4-----5-----6-----7---")
         for i, row in enumerate(self.board):
             print(" | ", end="")
             for j, col in enumerate(row):
@@ -65,7 +66,10 @@ class Checkers:
                         col_value = " X "
                     else:
                         col_value = " O "
-                print(col_value, end=" | ")
+                if j > 6:
+                    print(col_value, end=f" | {i}")
+                else:
+                    print(col_value, end=f" | ")
             print("\n -------------------------------------------------")
 
     def isFinished(self):
@@ -156,11 +160,15 @@ class Checkers:
             if abs(x_last-x_to) > 1 and abs(y_last-y_to) > 1:
                 index_x = int(last_cord[0] + abs(current_cord[0]-last_cord[0])/(current_cord[0]-last_cord[0]))
                 index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
-                self.board[index_x][index_y] = Pieces.EMPTY
-                self.board[x_to][y_to] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
+                self.board[index_x][index_y] = Pieces.EMPTY # Removes pieces that has been skipped over
 
             last_cord = current_cord
-            ## Update game state with function?
+
+        x_destination = to_cord[-1][0]
+        y_destination = to_cord[-1][1]
+        self.board[x_destination][y_destination] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE # Sets the piece at the last step of sequence of moves
+
+        ## Update game state with function?
         if not self.game_ended:
             self.turn = Player.BLACK if self.turn == Player.WHITE else Player.WHITE
 
