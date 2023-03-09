@@ -1,6 +1,8 @@
 import numpy as np
 from enum import Enum
 import math
+import emoji
+import regex
 
 BOARD_DIM = 8
 
@@ -10,30 +12,28 @@ class Player(Enum):
     NONE = 0
 
 class Pieces(Enum):
-    BLACK = 0
-    WHITE = 1
-    BLACK_KING = 2
-    WHITE_KING = 3
-    EMPTY = 4
+    BLACK = " B "
+    WHITE = " W "
+    BLACK_KING = " BK"
+    WHITE_KING = " WK"
+    EMPTY = "   "
 
 class Checkers:
     def __init__(self):
-        self.board = np.matrix([Pieces.EMPTY * BOARD_DIM] * BOARD_DIM)
+        self.board = [[Pieces.EMPTY for _ in range(BOARD_DIM)] for _ in range(BOARD_DIM)]
         self.turn = Player.BLACK
         self.game_ended = False
         self.win = Player.NONE
-        self.black_pieces = 12
-        self.white_pieces = 12
 
     def _create_place_piece(self, player, cord):
-        if player.Lower == "w":
+        if player.lower() == "w":
             self.board[cord[0]][cord[1]] = Pieces.WHITE
         else:
             self.board[cord[0]][cord[1]] = Pieces.BLACK
 
 
     def _setupBoard(self, init_type):
-        if init_type.Lower == "pieces":
+        if init_type.lower() == "pieces":
             for i in range(BOARD_DIM):
                 for j in range(BOARD_DIM):
                     if (i+j)%2 == 0:
@@ -45,7 +45,7 @@ class Checkers:
                             self.board[i][j] = Pieces.EMPTY
                     else:
                         self.board[i][j] = Pieces.EMPTY
-        elif init_type.Lower == "clear":
+        elif init_type.lower() == "clear":
             for i in range(BOARD_DIM):
                 for j in range(BOARD_DIM):
                     self.board = Pieces.EMPTY
@@ -54,10 +54,52 @@ class Checkers:
             raise ValueError
 
     def printBoard(self):
-        print(self.board)
+        print(" -------------------------------------------------")
+        for row in self.board:
+            print(" | ", end="")
+            for col in row:
+                print(col.value, end=" | ")
+            print("\n -------------------------------------------------")
 
     def isFinished(self):
         pass
+
+    def onBoard(self, cord):
+        valid_range = range(0,BOARD_DIM-1)
+        x, y = cord
+        if (x in valid_range and y in valid_range):
+            return True
+        else:
+            return False
+
+
+    def possibleMoves(self, cord):
+        if (not self.onBoard(cord)):
+            raise ValueError("Board index out of range")
+        
+        x, y = cord
+        opponents = [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]
+        player_multiplier = -1 if self.turn == Player.BLACK else 1 # for the player move direction
+        piece = self.board[x][y]
+        moves = []
+
+        # get diagonals
+        if (piece == Pieces.BLACK_KING or piece == Pieces.WHITE_KING):
+            diagonals = [i for i in [(x+1, y+1), (x-1, y-1), (x+1, y-1), (x-1, y+1)] if self.onBoard(i)]
+        else:
+            diagonals = [i for i in [(x+ 1 * player_multiplier, y+1), (x + 1 * player_multiplier, y-1)] if self.onBoard(i)]
+
+        for dx, dy in diagonals:
+            # if the square is empty, we can move there
+            if (self.board[dx][dy] == Pieces.EMPTY):
+                moves.append((dx, dy))
+            # if there's an opponent at a diagonal, we can jump over it
+            if (self.board[dx][dy] in opponents):
+                ddx = dx + dx - x
+                ddy = dy + dy - y
+                if (self.onBoard((ddx, ddy)) and self.board[ddx][ddy] == Pieces.EMPTY):
+                    moves.append((ddx, ddy))
+        return moves
 
     def validMove(self, from_cord, to_cord):
         """
@@ -71,56 +113,20 @@ class Checkers:
         """
         from_x, from_y = from_cord
         to_x, to_y = to_cord
-        valid_range = range(0,BOARD_DIM-1)
-
         # check that from_cord and to_cord are in range (0-7)
-        if (from_x not in valid_range or from_y not in valid_range or to_x not in valid_range or to_y not in valid_range):
+        if (not self.onBoard(from_cord) or not self.onBoard(to_cord)):
             raise ValueError("Board index out of range")
         # check that to_cord is unoccupied
         if (self.board[to_x][to_y] != Pieces.EMPTY):
-            raise ValueError("Trying to move to an occupied field")
-        
-        move_piece = self.board[from_x][from_y]
-        last_cord = from_cord
-        opponents = [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]
-        player_multiplier = 1 if self.turn == Player.BLACK else -1 # for the player move direction
+            raise ValueError("Trying to move to occupied field {}".format(to_cord))
+        # check that the piece at cord belongs to the current player
+        if (self.board[from_x][from_y] in [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]):
+            raise ValueError("Trying to move an opponent's piece at {}".format(from_cord))
+        # check that cord is not empty
+        if (self.board[from_x][from_y] == Pieces.EMPTY):
+            raise ValueError("Trying to move an empty piece at {}".format(from_cord))
 
-        # check that to_cord is a coordinate the piece is able to move
-
-        # kings can move to any diagonals
-        if (move_piece == Player.BLACK_KING or move_piece == Player.WHITE_KING):
-            # single move
-            if (math.abs(from_x - to_x) == 1 and math.abs(from_y - to_y) == 1):
-                return True
-            # jump over one player and land on empty space
-            elif (math.abs(from_x - to_x) == 2 and math.abs(from_y - to_y) == 2):
-                # check intermediate piece is an opponent
-                intermediate_piece = self.board[last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0]][last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1]]
-                if (intermediate_piece in opponents):
-                    return True
-                else:
-                    return False
-            else:
-                return False
-                
-        # checks if the direction of the move is correct
-        elif (move_piece == Player.BLACK or move_piece == Player.WHITE):
-            # single move
-            if (from_x - to_x == 1 * player_multiplier and math.abs(from_y - to_y) == 1):
-                return True
-            # jump over one player and land on empty space
-            elif (from_x - to_x == 2 * player_multiplier and math.abs(from_y - to_y) == 2):
-                # check intermediate piece is an opponent
-                intermediate_piece = self.board[last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0]][last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1]]
-                if (intermediate_piece in opponents):
-                    return True
-                else:
-                    return False
-            else:
-                return False
-        
-        else:
-            return False
+        return to_cord in self.possibleMoves(from_cord)
 
     def move(self, from_cord, to_cord):
         """
@@ -139,8 +145,8 @@ class Checkers:
                 self.board = board_copy
 
             if abs(last_cord[0]-to_cord[0]) > 1 and abs(last_cord[1]-to_cord[1]) > 1:
-                self.board[last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0]][last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1]] = Pieces.EMPTY
-                self.board[current_cord][current_cord] = Pieces.BLACK if self.turn == Player.Black else Pieces.WHITE
+                self.board[int(last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0])][int(last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1])] = Pieces.EMPTY
+                self.board[current_cord][current_cord] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
 
             last_cord = current_cord
             ## Update game state with function?
