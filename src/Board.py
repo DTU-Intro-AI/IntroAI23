@@ -24,7 +24,7 @@ class Checkers:
         self.win = Player.NONE
 
     def _create_place_piece(player, cord):
-        if player.Lower is "w":
+        if player.Lower == "w":
             self.board[cord[0]][cord[1]] = Pieces.WHITE
         else:
             self.board[cord[0]][cord[1]] = Pieces.BLACK
@@ -64,6 +64,8 @@ class Checkers:
         valid_range = range(0,BOARD_DIM-1)
         last_cord = from_cord
         opponents = [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]
+        player_multiplier = 1 if self.turn == Player.BLACK else -1 # for the player move direction
+
 
         # check that from_cord and to_cord are in range (0-7)
         if (from_x not in valid_range or from_y not in valid_range or to_x not in valid_range or to_y not in valid_range):
@@ -80,19 +82,33 @@ class Checkers:
             if (math.abs(from_x - to_x) == 1 and math.abs(from_y - to_y) == 1):
                 return True
             # jump over one player and land on empty space
-            if (math.abs(from_x - to_x) == 2 and math.abs(from_y - to_y) == 2):
+            elif (math.abs(from_x - to_x) == 2 and math.abs(from_y - to_y) == 2):
                 # check intermediate piece is an opponent
                 intermediate_piece = self.board[last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0]][last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1]]
                 if (intermediate_piece in opponents):
                     return True
                 else:
                     return False
-            
-
+            else:
+                return False
                 
-
+        # checks if the direction of the move is correct
         if (self.turn == Player.BLACK):
+            # single move
+            if (from_x - to_x == 1 * player_multiplier and math.abs(from_y - to_y) == 1):
+                return True
+            # jump over one player and land on empty space
+            elif (from_x - to_x == 2 * player_multiplier and math.abs(from_y - to_y) == 2):
+                # check intermediate piece is an opponent
+                intermediate_piece = self.board[last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0]][last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1]]
+                if (intermediate_piece in opponents):
+                    return True
+                else:
+                    return False
+            else:
+                return False
             
+        
 
         pass
 

@@ -1,6 +1,12 @@
 import unittest
-import Checkers
-from . import Pieces
+import os
+import sys
+os.chdir('../')
+path = os.getcwd()
+sys.path.append(path)
+
+from src.Board import Checkers
+from src.Board import Pieces
 
 class TestBoard(unittest.TestCase):
 
@@ -9,4 +15,4 @@ class TestBoard(unittest.TestCase):
         game._create_place_piece("b",(2,1))
         game._create_place_piece("w", (3,2))
         game.move((2,1),(4,3))
-        assert game.board[3][2] is Pieces.EMPTY
+        self.assertEqual(game.board[3][2], Pieces.EMPTY)
