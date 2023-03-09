@@ -145,28 +145,25 @@ class Checkers:
         :param to_cord: list of tuples (x, y) Where you are going. In case of multiple jumps in one turn, provide list of coordinate tuples
         """
 
-        self.board[from_cord[0]][from_cord[1]] = Pieces.EMPTY
         last_cord = from_cord
         board_copy = self.board.copy()
         for current_cord in to_cord:
             try: 
-                self.validMove(from_cord, to_cord)
+                self.validMove(last_cord, current_cord)
             except ValueError as e:
                 print(e)
                 self.board = board_copy
-
+                break
+            self.board[last_cord[0]][last_cord[1]] = Pieces.EMPTY
             x_last, y_last = last_cord
             x_to, y_to = current_cord
             if abs(x_last-x_to) > 1 and abs(y_last-y_to) > 1:
                 index_x = int(last_cord[0] + abs(current_cord[0]-last_cord[0])/(current_cord[0]-last_cord[0]))
                 index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
                 self.board[index_x][index_y] = Pieces.EMPTY # Removes pieces that has been skipped over
+                self.board[x_to][y_to] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
 
             last_cord = current_cord
-
-        x_destination = to_cord[-1][0]
-        y_destination = to_cord[-1][1]
-        self.board[x_destination][y_destination] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE # Sets the piece at the last step of sequence of moves
 
         ## Update game state with function?
         if not self.game_ended:
