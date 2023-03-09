@@ -13,4 +13,10 @@ class Board:
         self.game_ended = False
         self.win = NONE
 
+    def isFinished(self):
+        pass
+
+    def validMove(self, index_x, index_y):
+        pass
+
 
