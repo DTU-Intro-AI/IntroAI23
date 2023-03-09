@@ -18,32 +18,40 @@ class Pieces(Enum):
 
 class Checkers:
     def __init__(self):
-        self.board = np.array(BOARD_DIM,BOARD_DIM)
+        self.board = np.matrix([Pieces.EMPTY * BOARD_DIM] * BOARD_DIM)
         self.turn = Player.BLACK
         self.game_ended = False
         self.win = Player.NONE
         self.black_pieces = 12
         self.white_pieces = 12
 
-    def _create_place_piece(player, cord):
+    def _create_place_piece(self, player, cord):
         if player.Lower == "w":
             self.board[cord[0]][cord[1]] = Pieces.WHITE
         else:
             self.board[cord[0]][cord[1]] = Pieces.BLACK
 
 
-    def _setupBoard(self):
-        for i in range(BOARD_DIM):
-            for j in range(BOARD_DIM):
-                if (i+j)%2 == 0:
-                    if i < 3:
-                        self.board[i][j] = Pieces.WHITE
-                    elif i > 4:
-                        self.board[i][j] = Pieces.BLACK
+    def _setupBoard(self, init_type):
+        if init_type.Lower == "pieces":
+            for i in range(BOARD_DIM):
+                for j in range(BOARD_DIM):
+                    if (i+j)%2 == 0:
+                        if i < 3:
+                            self.board[i][j] = Pieces.WHITE
+                        elif i > 4:
+                            self.board[i][j] = Pieces.BLACK
+                        else:
+                            self.board[i][j] = Pieces.EMPTY
                     else:
                         self.board[i][j] = Pieces.EMPTY
-                else:
-                    self.board[i][j] = Pieces.EMPTY
+        elif init_type.Lower == "clear":
+            for i in range(BOARD_DIM):
+                for j in range(BOARD_DIM):
+                    self.board = Pieces.EMPTY
+        
+        else:
+            raise ValueError
 
     def printBoard(self):
         print(self.board)
@@ -63,6 +71,8 @@ class Checkers:
         """
         from_x, from_y = from_cord
         to_x, to_y = to_cord
+        valid_range = range(0,BOARD_DIM-1)
+
         # check that from_cord and to_cord are in range (0-7)
         if (from_x not in valid_range or from_y not in valid_range or to_x not in valid_range or to_y not in valid_range):
             raise ValueError("Board index out of range")
@@ -71,7 +81,6 @@ class Checkers:
             raise ValueError("Trying to move to an occupied field")
         
         move_piece = self.board[from_x][from_y]
-        valid_range = range(0,BOARD_DIM-1)
         last_cord = from_cord
         opponents = [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]
         player_multiplier = 1 if self.turn == Player.BLACK else -1 # for the player move direction
