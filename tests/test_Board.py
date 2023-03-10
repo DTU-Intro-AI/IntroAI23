@@ -7,6 +7,7 @@ sys.path.append(path)
 
 from src.Board import Checkers
 from src.Board import Pieces
+from src.Board import Player
 
 class TestBoard(unittest.TestCase):
 
@@ -88,6 +89,15 @@ class TestBoard(unittest.TestCase):
         game._create_place_piece("w", (4, 2))
         valid = game.validMove((5, 1), (3, 3))
         self.assertTrue(valid)
+
+    def test_isFinished(self):
+        game = Checkers()
+        game._setupBoard("pieces")
+        game._isFinished()
+        isNotEnded = game.game_ended
+        self.assertFalse(isNotEnded)
+        noWinner = game.win
+        self.assertEqual(noWinner, Player.NONE)
 
 test = TestBoard()
 test.test_valid_move()

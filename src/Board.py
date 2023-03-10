@@ -73,7 +73,50 @@ class Checkers:
             print("\n -------------------------------------------------")
 
     def isFinished(self):
-        pass
+        # first check if any of the colors is out of pieces
+        white_pieces = 0
+        black_pieces = 0
+        for i in range(BOARD_DIM):
+            for j in range(BOARD_DIM):
+                if self.board[i][j] == Pieces.WHITE or self.board[i][j] == Pieces.WHITE_KING:
+                    white_pieces += 1
+                    break
+                elif self.board[i][j] == Pieces.BLACK or self.board[i][j] == Pieces.BLACK_KING:
+                    black_pieces += 1
+                    break
+        if white_pieces == 0:
+            self.game_ended = True
+            self.win = Player.BLACK
+        elif black_pieces == 0:
+            self.game_ended = True
+            self.win = Player.WHITE
+        else:
+            # check if any of the players can make a move
+            whiteMoves_possible = False
+            blackMoves_possible = False
+            for i in range(BOARD_DIM):
+                for j in range(BOARD_DIM):
+                    if whiteMoves_possible == False and self.board[i][j] == Pieces.WHITE or self.board[i][j] == Pieces.WHITE_KING:
+                        if len(self.possibleMoves([i, j])) > 0:
+                            whiteMoves_possible = True
+
+                    elif blackMoves_possible == False and self.board[i][j] == Pieces.BLACK or self.board[i][j] == Pieces.BLACK_KING:
+                        if len(self.possibleMoves([i, j])) > 0:
+                            blackMoves_possible = True
+
+                    elif blackMoves_possible == True and whiteMoves_possible == True:
+                        break
+
+                    else:
+                        continue
+
+            if whiteMoves_possible == False:
+                self.game_ended = True
+                self.win = Player.BLACK
+
+            elif blackMoves_possible == False:
+                self.game_ended = True
+                self.win = Player.WHITE
 
     def onBoard(self, cord):
         valid_range = range(0,BOARD_DIM-1)
