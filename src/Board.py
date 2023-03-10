@@ -118,6 +118,13 @@ class Checkers:
                 self.game_ended = True
                 self.win = Player.WHITE
 
+    def upgradeToKings(self):
+        for i in range(BOARD_DIM):
+            if self.board[0][i] == Pieces.WHITE:
+                self.board[0][i] = Pieces.WHITE_KING
+            elif self.board[7][i] == Pieces.BLACK:
+                self.board[7][i] = Pieces.BLACK_KING
+
     def onBoard(self, cord):
         valid_range = range(0,BOARD_DIM-1)
         x, y = cord

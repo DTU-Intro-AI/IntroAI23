@@ -93,7 +93,7 @@ class TestBoard(unittest.TestCase):
     def test_isFinished(self):
         game = Checkers()
         game._setupBoard("pieces")
-        game._isFinished()
+        game.isFinished()
         isNotEnded = game.game_ended
         self.assertFalse(isNotEnded)
         noWinner = game.win
