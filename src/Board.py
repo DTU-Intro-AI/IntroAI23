@@ -1,6 +1,8 @@
 import numpy as np
 from enum import Enum
 import math
+# import emoji
+# import regex
 
 BOARD_DIM = 8
 
@@ -67,9 +69,9 @@ class Checkers:
                 col_value = col.value
                 if col == Pieces.EMPTY:
                     if (i+j) % 2:
-                        col_value = " X "
+                        col_value = "   "
                     else:
-                        col_value = " O "
+                        col_value = " _ "
                 if j > 6:
                     print(col_value, end=f" | {i}")
                 else:
@@ -81,6 +83,7 @@ class Checkers:
         Checks if the game has ended
         A game ends when one of the players has no pieces left
         OR when one of the players cannot make a move
+        Returns if the game is finished or not
         """
         whiteMoves_possible = False
         blackMoves_possible = False
@@ -118,20 +121,10 @@ class Checkers:
 
         return self.game_ended
 
-    def upgradeToKings(self):
-        for i in range(BOARD_DIM):
-            if self.board[0][i] == Pieces.WHITE:
-                self.board[0][i] = Pieces.WHITE_KING
-            elif self.board[7][i] == Pieces.BLACK:
-                self.board[7][i] = Pieces.BLACK_KING
-
     def onBoard(self, cord):
         valid_range = range(0,BOARD_DIM)
         x, y = cord
-        if (x in valid_range and y in valid_range):
-            return True
-        else:
-            return False
+        return (x in valid_range and y in valid_range)
 
     def possibleMoves(self, cord):
         if (not self.onBoard(cord)):
@@ -212,9 +205,9 @@ class Checkers:
                 index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
                 self.board[index_x][index_y] = Pieces.EMPTY # Removes pieces that has been skipped over
 
-            if self.turn == Player.WHITE and y_to == 7:
+            if self.turn == Player.WHITE and x_to == 7:
                 self.board[x_to][y_to] = Pieces.WHITE_KING
-            elif self.turn == Player.BLACK and y_to == 0:
+            elif self.turn == Player.BLACK and x_to == 0:
                 self.board[x_to][y_to] = Pieces.BLACK_KING
             else:
                 self.board[x_to][y_to] = piece_type
