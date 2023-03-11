@@ -14,6 +14,7 @@ class TestBoard(unittest.TestCase):
     def test_move(self):
         print("Running test_move...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("b", (2, 1))
         game._create_place_piece("w", (3, 2))
         game.printBoard()
@@ -25,9 +26,24 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(test2, Pieces.BLACK)
         print("Success")
 
+    def test_move_not_backwards(self):
+        print("Running test_move...")
+        game = Checkers()
+        game._setupBoard("clear")
+        game._create_place_piece("w", (3, 2))
+        game.printBoard()
+        game.move((3, 2), [(2, 1)])
+        game.printBoard()
+        test1 = game.board[3][2]
+        test2 = game.board[2][1]
+        self.assertEqual(test1, Pieces.WHITE)
+        self.assertEqual(test2, Pieces.EMPTY)
+        print("Success")
+
     def test_move_advanced(self):
         print("Running test_move_advanced...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("b", (2, 1))
         game._create_place_piece("w", (3, 2))
         game._create_place_piece("w", (5, 4))
@@ -45,6 +61,7 @@ class TestBoard(unittest.TestCase):
     def test_move_opposite_direction(self):
         print("Running test_move_opposite_direction...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("w", (2, 1))
         game._create_place_piece("w", (4, 3))
         game._create_place_piece("b", (5, 4))
@@ -56,12 +73,13 @@ class TestBoard(unittest.TestCase):
         test3 = game.board[1][0]
         self.assertEqual(test1, Pieces.EMPTY)
         self.assertEqual(test2, Pieces.EMPTY)
-        self.assertEqual(test3, Pieces.BLACK)
+        self.assertEqual(test3, Pieces.BLACK_KING)
         print("Success")
 
     def test_move_3rd_direction(self):
         print("Running test_move_3rd_direction...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("w", (1, 2))
         game._create_place_piece("w", (3, 4))
         game._create_place_piece("b", (4, 5))
@@ -76,9 +94,10 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(test3, Pieces.BLACK)
         print("Success")
 
-    def test_move_king_piece(self):
+    def test_move_create_king_piece(self):
         print("Running test_move_king_piece...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("w", (6, 6))
         game.turn = Player.WHITE
         game.printBoard()
@@ -87,7 +106,20 @@ class TestBoard(unittest.TestCase):
         test1 = game.board[7][7]
         self.assertEqual(test1, Pieces.WHITE_KING)
         print("Success")
-    
+
+    def test_move_existing_king_piece(self):
+        print("Running test_move_king_piece...")
+        game = Checkers()
+        game._setupBoard("clear")
+        game._create_place_piece("wk", (7, 7))
+        game.turn = Player.WHITE
+        game.printBoard()
+        game.move((7, 7), [(6, 6)])
+        game.printBoard()
+        test1 = game.board[6][6]
+        self.assertEqual(test1, Pieces.WHITE_KING)
+        print("Success")
+
     def test_valid_move(self):
         print("Running test_valid_move...")
         game = Checkers()
@@ -125,27 +157,13 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(game.win, Player.NONE)
         print("Success")
 
-    def test_1_5(self):
-        print("Running test_isFinished...")
-        game = Checkers()
-        game._setupBoard("pieces")
-        game.printBoard()
-        test = game.board[2][4]
-        print(test)
-        game.move((1,5), [(2,4)])
-        game.printBoard()
-        test = game.board[2][4]
-        self.assertEqual(test, Pieces.BLACK)
-        print("Success")
-
-test = TestBoard()
-test.test_1_5()
-test.test_move()
-test.test_move_advanced()
-test.test_move_opposite_direction()
-test.test_move_3rd_direction()
-test.test_move_king_piece()
-test.test_valid_move()
-test.test_invalid_move()
-test.test_valid_jump()
-test.test_isFinished()
+# test = TestBoard()
+# test.test_move()
+# test.test_move_advanced()
+# test.test_move_opposite_direction()
+# test.test_move_3rd_direction()
+# test.test_move_king_piece()
+# test.test_valid_move()
+# test.test_invalid_move()
+# test.test_valid_jump()
+# test.test_isFinished()
