@@ -33,11 +33,12 @@ class TestBoard(unittest.TestCase):
         with self.assertRaises(ValueError):
             game.validMove((0,0),(4,3))
     
-    # tries to move other player's piece
+    # tries to capture other player's piece
     def test_valid_jump(self):
         game = Checkers()
         game._setupBoard("pieces")
         game._create_place_piece("w",(4,2))
+        game.printBoard()
         valid = game.validMove((5,1), (3,3))
         self.assertTrue(valid)
 

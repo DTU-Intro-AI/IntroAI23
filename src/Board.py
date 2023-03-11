@@ -1,8 +1,6 @@
 import numpy as np
 from enum import Enum
 import math
-import emoji
-import regex
 
 BOARD_DIM = 8
 
@@ -82,7 +80,6 @@ class Checkers:
         player_multiplier = -1 if self.turn == Player.BLACK else 1 # for the player move direction
         piece = self.board[x][y]
         moves = []
-
         # get diagonals
         if (piece == Pieces.BLACK_KING or piece == Pieces.WHITE_KING):
             diagonals = [i for i in [(x+1, y+1), (x-1, y-1), (x+1, y-1), (x-1, y+1)] if self.onBoard(i)]
@@ -153,8 +150,4 @@ class Checkers:
         if not self.game_ended:
             self.turn = Player.BLACK if self.turn == Player.WHITE else Player.WHITE
 
-
-            
-            
-        
         
