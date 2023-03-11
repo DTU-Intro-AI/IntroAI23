@@ -1,11 +1,6 @@
 import numpy as np
 from enum import Enum
 import math
-<<<<<<< HEAD
-=======
-# import emoji
-# import regex
->>>>>>> c3c393b9c60ea4805542592df1e05b630298390f
 
 BOARD_DIM = 8
 
@@ -24,7 +19,7 @@ class Pieces(Enum):
 class Checkers:
     def __init__(self):
         self.board = [[Pieces.EMPTY for _ in range(BOARD_DIM)] for _ in range(BOARD_DIM)]
-        self._setupBoard("clear")
+        self._setupBoard("pieces")
         self.turn = Player.BLACK
         self.game_ended = False
         self.win = Player.NONE
@@ -120,21 +115,21 @@ class Checkers:
                 self.board[7][i] = Pieces.BLACK_KING
 
     def onBoard(self, cord):
-        valid_range = range(0,BOARD_DIM-1)
+        valid_range = range(0,BOARD_DIM)
         x, y = cord
         if (x in valid_range and y in valid_range):
             return True
         else:
             return False
 
-
     def possibleMoves(self, cord):
         if (not self.onBoard(cord)):
             raise ValueError("Board index out of range")
 
         x, y = cord
-        opponents = [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]
-        player_multiplier = -1 if self.turn == Player.BLACK else 1 # for the player move direction
+        piece = self.board[x][y]
+        opponents = [Pieces.WHITE, Pieces.WHITE_KING] if (piece == Pieces.BLACK or piece == Pieces.BLACK_KING) else [Pieces.BLACK, Pieces.BLACK_KING]
+        player_multiplier = -1 if (piece == Pieces.BLACK or piece == Pieces.BLACK_KING) else 1 # for the player move direction
         piece = self.board[x][y]
         moves = []
         # get diagonals
@@ -213,3 +208,5 @@ class Checkers:
             self.turn = Player.BLACK if self.turn == Player.WHITE else Player.WHITE
 
         
+    def get_turn(self):
+        return self.turn
