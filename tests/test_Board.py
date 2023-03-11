@@ -125,7 +125,21 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(game.win, Player.NONE)
         print("Success")
 
+    def test_1_5(self):
+        print("Running test_isFinished...")
+        game = Checkers()
+        game._setupBoard("pieces")
+        game.printBoard()
+        test = game.board[2][4]
+        print(test)
+        game.move((1,5), [(2,4)])
+        game.printBoard()
+        test = game.board[2][4]
+        self.assertEqual(test, Pieces.BLACK)
+        print("Success")
+
 test = TestBoard()
+test.test_1_5()
 test.test_move()
 test.test_move_advanced()
 test.test_move_opposite_direction()
