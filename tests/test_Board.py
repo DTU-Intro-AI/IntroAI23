@@ -148,6 +148,8 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(valid)
         print("Success")
 
+    # moves Black from (1,5) to 
+
     def test_isFinished(self):
         print("Running test_isFinished...")
         game = Checkers()
