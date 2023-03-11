@@ -80,7 +80,7 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(test3, Pieces.BLACK)
         print("Success")
 
-    def test_move_king_piece(self):
+    def test_move_create_king_piece(self):
         print("Running test_move_king_piece...")
         game = Checkers()
         game._setupBoard("clear")
@@ -90,6 +90,19 @@ class TestBoard(unittest.TestCase):
         game.move((6, 6), [(7, 7)])
         game.printBoard()
         test1 = game.board[7][7]
+        self.assertEqual(test1, Pieces.WHITE_KING)
+        print("Success")
+
+    def test_move_existing_king_piece(self):
+        print("Running test_move_king_piece...")
+        game = Checkers()
+        game._setupBoard("clear")
+        game._create_place_piece("wk", (7, 7))
+        game.turn = Player.WHITE
+        game.printBoard()
+        game.move((7, 7), [(6, 6)])
+        game.printBoard()
+        test1 = game.board[6][6]
         self.assertEqual(test1, Pieces.WHITE_KING)
         print("Success")
 
@@ -130,13 +143,13 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(game.win, Player.NONE)
         print("Success")
 
-test = TestBoard()
-test.test_move()
-test.test_move_advanced()
-test.test_move_opposite_direction()
-test.test_move_3rd_direction()
-test.test_move_king_piece()
-test.test_valid_move()
-test.test_invalid_move()
-test.test_valid_jump()
-test.test_isFinished()
+# test = TestBoard()
+# test.test_move()
+# test.test_move_advanced()
+# test.test_move_opposite_direction()
+# test.test_move_3rd_direction()
+# test.test_move_king_piece()
+# test.test_valid_move()
+# test.test_invalid_move()
+# test.test_valid_jump()
+# test.test_isFinished()

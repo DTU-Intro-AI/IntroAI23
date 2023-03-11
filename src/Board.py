@@ -26,11 +26,17 @@ class Checkers:
         self.game_ended = False
         self.win = Player.NONE
 
-    def _create_place_piece(self, player, cord):
-        if player == "w":
+    def _create_place_piece(self, piece, cord):
+        if piece == "w":
             self.board[cord[0]][cord[1]] = Pieces.WHITE
-        else:
+        elif piece == "wk":
+            self.board[cord[0]][cord[1]] = Pieces.WHITE_KING
+        elif piece == "b":
             self.board[cord[0]][cord[1]] = Pieces.BLACK
+        elif piece == "bk":
+            self.board[cord[0]][cord[1]] = Pieces.BLACK_KING
+        else:
+            raise ValueError("Not a damn piece type")
 
 
     def _setupBoard(self, init_type):
@@ -198,7 +204,7 @@ class Checkers:
             except ValueError as e:
                 print(e)
                 self.board = board_copy
-                break
+                return False
             piece_type = self.board[last_cord[0]][last_cord[1]]
             self.board[last_cord[0]][last_cord[1]] = Pieces.EMPTY
             x_last, y_last = last_cord
@@ -220,7 +226,8 @@ class Checkers:
         ## Update game state with function?
         if not self.game_ended:
             self.turn = Player.BLACK if self.turn == Player.WHITE else Player.WHITE
-        
+        return True
+
     def get_turn(self):
         return self.turn
 
