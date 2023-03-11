@@ -26,6 +26,20 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(test2, Pieces.BLACK)
         print("Success")
 
+    def test_move_not_backwards(self):
+        print("Running test_move...")
+        game = Checkers()
+        game._setupBoard("clear")
+        game._create_place_piece("w", (3, 2))
+        game.printBoard()
+        game.move((3, 2), [(2, 1)])
+        game.printBoard()
+        test1 = game.board[3][2]
+        test2 = game.board[2][1]
+        self.assertEqual(test1, Pieces.WHITE)
+        self.assertEqual(test2, Pieces.EMPTY)
+        print("Success")
+
     def test_move_advanced(self):
         print("Running test_move_advanced...")
         game = Checkers()
