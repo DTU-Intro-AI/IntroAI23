@@ -1,11 +1,8 @@
 import numpy as np
 from enum import Enum
 import math
-<<<<<<< HEAD
-=======
 # import emoji
 # import regex
->>>>>>> c3c393b9c60ea4805542592df1e05b630298390f
 
 BOARD_DIM = 8
 
@@ -202,6 +199,7 @@ class Checkers:
                 print(e)
                 self.board = board_copy
                 break
+            piece_type = self.board[last_cord[0]][last_cord[1]]
             self.board[last_cord[0]][last_cord[1]] = Pieces.EMPTY
             x_last, y_last = last_cord
             x_to, y_to = current_cord
@@ -209,7 +207,13 @@ class Checkers:
                 index_x = int(last_cord[0] + abs(current_cord[0]-last_cord[0])/(current_cord[0]-last_cord[0]))
                 index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
                 self.board[index_x][index_y] = Pieces.EMPTY # Removes pieces that has been skipped over
-                self.board[x_to][y_to] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
+
+            if self.turn == Player.WHITE and to_cord[0] == 7:
+                self.board[x_to][y_to] = Pieces.WHITE_KING
+            elif self.turn == Player.BLACK and to_cord[0] == 0:
+                self.board[x_to][y_to] = Pieces.BLACK_KING
+            else:
+                self.board[x_to][y_to] = piece_type
 
             last_cord = current_cord
 
