@@ -174,7 +174,7 @@ class Checkers:
         if (self.board[to_x][to_y] != Pieces.EMPTY):
             raise ValueError("Trying to move to occupied field {}".format(to_cord))
         # check that the piece at cord belongs to the current player
-        if (self.board[from_x][from_y] in [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]):
+        if ((self.board[from_x][from_y] in [Pieces.WHITE, Pieces.WHITE_KING] and self.turn == Player.BLACK) or (self.board[from_x][from_y] in [Pieces.BLACK, Pieces.BLACK_KING] and self.turn == Player.WHITE)):
             raise ValueError("Trying to move an opponent's piece at {}".format(from_cord))
         # check that cord is not empty
         if (self.board[from_x][from_y] == Pieces.EMPTY):
@@ -206,9 +206,9 @@ class Checkers:
                 index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
                 self.board[index_x][index_y] = Pieces.EMPTY # Removes pieces that has been skipped over
 
-            if self.turn == Player.WHITE and to_cord[0] == 7:
+            if self.turn == Player.WHITE and y_to == 7:
                 self.board[x_to][y_to] = Pieces.WHITE_KING
-            elif self.turn == Player.BLACK and to_cord[0] == 0:
+            elif self.turn == Player.BLACK and y_to == 0:
                 self.board[x_to][y_to] = Pieces.BLACK_KING
             else:
                 self.board[x_to][y_to] = piece_type
