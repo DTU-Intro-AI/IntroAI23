@@ -76,18 +76,17 @@ class Checkers:
         A game ends when one of the players has no pieces left
         OR when one of the players cannot make a move
         """
-        # first check if any of the colors is out of pieces
         whiteMoves_possible = False
         blackMoves_possible = False
 
         for i in range(BOARD_DIM):
             for j in range(BOARD_DIM):
-                if whiteMoves_possible == False and self.board[i][j] == Pieces.WHITE or self.board[i][j] == Pieces.WHITE_KING:
+                if whiteMoves_possible == False and (self.board[i][j] == Pieces.WHITE or self.board[i][j] == Pieces.WHITE_KING):
                     if len(self.possibleMoves([i, j])) > 0:
                         whiteMoves_possible = True
-                elif blackMoves_possible == False and self.board[i][j] == Pieces.BLACK or self.board[i][j] == Pieces.BLACK_KING:
-                        if len(self.possibleMoves([i, j])) > 0:
-                            blackMoves_possible = True
+                elif blackMoves_possible == False and (self.board[i][j] == Pieces.BLACK or self.board[i][j] == Pieces.BLACK_KING):
+                    if len(self.possibleMoves([i, j])) > 0:
+                        blackMoves_possible = True
 
                 elif blackMoves_possible == True and whiteMoves_possible == True:
                     break
@@ -106,6 +105,12 @@ class Checkers:
         elif blackMoves_possible == False and whiteMoves_possible == False:
             self.game_ended = True
             self.win = Player.NONE
+
+        else:
+            self.game_ended = False
+            self.win = Player.NONE
+
+        return self.game_ended
 
     def upgradeToKings(self):
         for i in range(BOARD_DIM):
@@ -192,6 +197,7 @@ class Checkers:
                 print(e)
                 self.board = board_copy
                 break
+            piece_type = self.board[last_cord[0]][last_cord[1]]
             self.board[last_cord[0]][last_cord[1]] = Pieces.EMPTY
             x_last, y_last = last_cord
             x_to, y_to = current_cord
@@ -199,14 +205,29 @@ class Checkers:
                 index_x = int(last_cord[0] + abs(current_cord[0]-last_cord[0])/(current_cord[0]-last_cord[0]))
                 index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
                 self.board[index_x][index_y] = Pieces.EMPTY # Removes pieces that has been skipped over
-                self.board[x_to][y_to] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
+
+            if self.turn == Player.WHITE and to_cord[0] == 7:
+                self.board[x_to][y_to] = Pieces.WHITE_KING
+            elif self.turn == Player.BLACK and to_cord[0] == 0:
+                self.board[x_to][y_to] = Pieces.BLACK_KING
+            else:
+                self.board[x_to][y_to] = piece_type
 
             last_cord = current_cord
 
         ## Update game state with function?
         if not self.game_ended:
             self.turn = Player.BLACK if self.turn == Player.WHITE else Player.WHITE
-
         
     def get_turn(self):
         return self.turn
+
+
+class Tester:
+    def __init__(self):
+        game = Checkers()
+        game._setupBoard("pieces")
+        game.isFinished()
+
+
+Tester()

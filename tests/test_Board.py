@@ -67,6 +67,16 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(test1, Pieces.EMPTY)
         self.assertEqual(test2, Pieces.EMPTY)
         self.assertEqual(test3, Pieces.BLACK)
+
+    def test_move_king_piece(self):
+        game = Checkers()
+        game._create_place_piece("w", (6, 6))
+        game.turn = Player.WHITE
+        game.printBoard()
+        game.move((6, 6), [(7, 7)])
+        game.printBoard()
+        test1 = game.board[7][7]
+        self.assertEqual(test1, Pieces.WHITE_KING)
     
     def test_valid_move(self):
         game = Checkers()
@@ -80,7 +90,7 @@ class TestBoard(unittest.TestCase):
         game = Checkers()
         game._setupBoard("pieces")
         with self.assertRaises(ValueError):
-            game.validMove((0, 0),(4, 3))
+            game.validMove((0, 0), (4, 3))
 
     # tries to move other player's piece
     def test_valid_jump(self):
@@ -94,12 +104,15 @@ class TestBoard(unittest.TestCase):
         game = Checkers()
         game._setupBoard("pieces")
         game.isFinished()
-        isNotEnded = game.game_ended
-        self.assertFalse(isNotEnded)
-        noWinner = game.win
-        self.assertEqual(noWinner, Player.NONE)
+        self.assertFalse(game.game_ended)
+        self.assertEqual(game.win, Player.NONE)
 
 test = TestBoard()
+test.test_move()
+test.test_move_advanced()
+test.test_move_opposite_direction()
+test.test_move_3rd_direction()
+test.test_move_king_piece()
 test.test_valid_move()
 test.test_invalid_move()
 test.test_valid_jump()
