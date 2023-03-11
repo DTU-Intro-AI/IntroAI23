@@ -1,6 +1,11 @@
 import numpy as np
 from enum import Enum
 import math
+<<<<<<< HEAD
+=======
+# import emoji
+# import regex
+>>>>>>> c3c393b9c60ea4805542592df1e05b630298390f
 
 BOARD_DIM = 8
 
@@ -19,12 +24,13 @@ class Pieces(Enum):
 class Checkers:
     def __init__(self):
         self.board = [[Pieces.EMPTY for _ in range(BOARD_DIM)] for _ in range(BOARD_DIM)]
+        self._setupBoard("clear")
         self.turn = Player.BLACK
         self.game_ended = False
         self.win = Player.NONE
 
     def _create_place_piece(self, player, cord):
-        if player.lower() == "w":
+        if player == "w":
             self.board[cord[0]][cord[1]] = Pieces.WHITE
         else:
             self.board[cord[0]][cord[1]] = Pieces.BLACK
@@ -46,21 +52,72 @@ class Checkers:
         elif init_type.lower() == "clear":
             for i in range(BOARD_DIM):
                 for j in range(BOARD_DIM):
-                    self.board = Pieces.EMPTY
+                    self.board[i][j] = Pieces.EMPTY
         
         else:
             raise ValueError
 
     def printBoard(self):
-        print(" -------------------------------------------------")
-        for row in self.board:
+        print("\n")
+        print(" ---0-----1-----2-----3-----4-----5-----6-----7---")
+        for i, row in enumerate(self.board):
             print(" | ", end="")
-            for col in row:
-                print(col.value, end=" | ")
+            for j, col in enumerate(row):
+                col_value = col.value
+                if col == Pieces.EMPTY:
+                    if (i+j) % 2:
+                        col_value = " X "
+                    else:
+                        col_value = " O "
+                if j > 6:
+                    print(col_value, end=f" | {i}")
+                else:
+                    print(col_value, end=f" | ")
             print("\n -------------------------------------------------")
 
     def isFinished(self):
-        pass
+        """
+        Checks if the game has ended
+        A game ends when one of the players has no pieces left
+        OR when one of the players cannot make a move
+        """
+        # first check if any of the colors is out of pieces
+        whiteMoves_possible = False
+        blackMoves_possible = False
+
+        for i in range(BOARD_DIM):
+            for j in range(BOARD_DIM):
+                if whiteMoves_possible == False and self.board[i][j] == Pieces.WHITE or self.board[i][j] == Pieces.WHITE_KING:
+                    if len(self.possibleMoves([i, j])) > 0:
+                        whiteMoves_possible = True
+                elif blackMoves_possible == False and self.board[i][j] == Pieces.BLACK or self.board[i][j] == Pieces.BLACK_KING:
+                        if len(self.possibleMoves([i, j])) > 0:
+                            blackMoves_possible = True
+
+                elif blackMoves_possible == True and whiteMoves_possible == True:
+                    break
+
+                else:
+                    continue
+
+        if whiteMoves_possible == False and blackMoves_possible == True:
+            self.game_ended = True
+            self.win = Player.BLACK
+
+        elif blackMoves_possible == False and whiteMoves_possible == True:
+            self.game_ended = True
+            self.win = Player.WHITE
+
+        elif blackMoves_possible == False and whiteMoves_possible == False:
+            self.game_ended = True
+            self.win = Player.NONE
+
+    def upgradeToKings(self):
+        for i in range(BOARD_DIM):
+            if self.board[0][i] == Pieces.WHITE:
+                self.board[0][i] = Pieces.WHITE_KING
+            elif self.board[7][i] == Pieces.BLACK:
+                self.board[7][i] = Pieces.BLACK_KING
 
     def onBoard(self, cord):
         valid_range = range(0,BOARD_DIM-1)
@@ -74,7 +131,7 @@ class Checkers:
     def possibleMoves(self, cord):
         if (not self.onBoard(cord)):
             raise ValueError("Board index out of range")
-        
+
         x, y = cord
         opponents = [Pieces.WHITE, Pieces.WHITE_KING] if self.turn == Player.BLACK else [Pieces.BLACK, Pieces.BLACK_KING]
         player_multiplier = -1 if self.turn == Player.BLACK else 1 # for the player move direction
@@ -131,22 +188,27 @@ class Checkers:
         :param to_cord: list of tuples (x, y) Where you are going. In case of multiple jumps in one turn, provide list of coordinate tuples
         """
 
-        self.board[from_cord[0]][from_cord[1]] = Pieces.EMPTY
         last_cord = from_cord
-        board_copy = self.board.copy
+        board_copy = self.board.copy()
         for current_cord in to_cord:
             try: 
-                self.validMove(from_cord, to_cord)
+                self.validMove(last_cord, current_cord)
             except ValueError as e:
                 print(e)
                 self.board = board_copy
-
-            if abs(last_cord[0]-to_cord[0]) > 1 and abs(last_cord[1]-to_cord[1]) > 1:
-                self.board[int(last_cord[0] + abs(last_cord[0]-to_cord[0])/last_cord[0]-to_cord[0])][int(last_cord[1] + abs(last_cord[1]-to_cord[1])/last_cord[1]-to_cord[1])] = Pieces.EMPTY
-                self.board[current_cord][current_cord] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
+                break
+            self.board[last_cord[0]][last_cord[1]] = Pieces.EMPTY
+            x_last, y_last = last_cord
+            x_to, y_to = current_cord
+            if abs(x_last-x_to) > 1 and abs(y_last-y_to) > 1:
+                index_x = int(last_cord[0] + abs(current_cord[0]-last_cord[0])/(current_cord[0]-last_cord[0]))
+                index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
+                self.board[index_x][index_y] = Pieces.EMPTY # Removes pieces that has been skipped over
+                self.board[x_to][y_to] = Pieces.BLACK if self.turn == Player.BLACK else Pieces.WHITE
 
             last_cord = current_cord
-            ## Update game state with function?
+
+        ## Update game state with function?
         if not self.game_ended:
             self.turn = Player.BLACK if self.turn == Player.WHITE else Player.WHITE
 
