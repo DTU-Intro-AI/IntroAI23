@@ -14,6 +14,7 @@ class TestBoard(unittest.TestCase):
     def test_move(self):
         print("Running test_move...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("b", (2, 1))
         game._create_place_piece("w", (3, 2))
         game.printBoard()
@@ -28,6 +29,7 @@ class TestBoard(unittest.TestCase):
     def test_move_advanced(self):
         print("Running test_move_advanced...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("b", (2, 1))
         game._create_place_piece("w", (3, 2))
         game._create_place_piece("w", (5, 4))
@@ -45,6 +47,7 @@ class TestBoard(unittest.TestCase):
     def test_move_opposite_direction(self):
         print("Running test_move_opposite_direction...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("w", (2, 1))
         game._create_place_piece("w", (4, 3))
         game._create_place_piece("b", (5, 4))
@@ -56,12 +59,13 @@ class TestBoard(unittest.TestCase):
         test3 = game.board[1][0]
         self.assertEqual(test1, Pieces.EMPTY)
         self.assertEqual(test2, Pieces.EMPTY)
-        self.assertEqual(test3, Pieces.BLACK)
+        self.assertEqual(test3, Pieces.BLACK_KING)
         print("Success")
 
     def test_move_3rd_direction(self):
         print("Running test_move_3rd_direction...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("w", (1, 2))
         game._create_place_piece("w", (3, 4))
         game._create_place_piece("b", (4, 5))
@@ -79,6 +83,7 @@ class TestBoard(unittest.TestCase):
     def test_move_king_piece(self):
         print("Running test_move_king_piece...")
         game = Checkers()
+        game._setupBoard("clear")
         game._create_place_piece("w", (6, 6))
         game.turn = Player.WHITE
         game.printBoard()
@@ -87,7 +92,7 @@ class TestBoard(unittest.TestCase):
         test1 = game.board[7][7]
         self.assertEqual(test1, Pieces.WHITE_KING)
         print("Success")
-    
+
     def test_valid_move(self):
         print("Running test_valid_move...")
         game = Checkers()
