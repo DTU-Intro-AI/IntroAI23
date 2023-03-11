@@ -81,18 +81,17 @@ class Checkers:
         A game ends when one of the players has no pieces left
         OR when one of the players cannot make a move
         """
-        # first check if any of the colors is out of pieces
         whiteMoves_possible = False
         blackMoves_possible = False
 
         for i in range(BOARD_DIM):
             for j in range(BOARD_DIM):
-                if whiteMoves_possible == False and self.board[i][j] == Pieces.WHITE or self.board[i][j] == Pieces.WHITE_KING:
+                if whiteMoves_possible == False and (self.board[i][j] == Pieces.WHITE or self.board[i][j] == Pieces.WHITE_KING):
                     if len(self.possibleMoves([i, j])) > 0:
                         whiteMoves_possible = True
-                elif blackMoves_possible == False and self.board[i][j] == Pieces.BLACK or self.board[i][j] == Pieces.BLACK_KING:
-                        if len(self.possibleMoves([i, j])) > 0:
-                            blackMoves_possible = True
+                elif blackMoves_possible == False and (self.board[i][j] == Pieces.BLACK or self.board[i][j] == Pieces.BLACK_KING):
+                    if len(self.possibleMoves([i, j])) > 0:
+                        blackMoves_possible = True
 
                 elif blackMoves_possible == True and whiteMoves_possible == True:
                     break
@@ -112,6 +111,12 @@ class Checkers:
             self.game_ended = True
             self.win = Player.NONE
 
+        else:
+            self.game_ended = False
+            self.win = Player.NONE
+
+        return self.game_ended
+
     def upgradeToKings(self):
         for i in range(BOARD_DIM):
             if self.board[0][i] == Pieces.WHITE:
@@ -120,7 +125,7 @@ class Checkers:
                 self.board[7][i] = Pieces.BLACK_KING
 
     def onBoard(self, cord):
-        valid_range = range(0,BOARD_DIM-1)
+        valid_range = range(0,BOARD_DIM)
         x, y = cord
         if (x in valid_range and y in valid_range):
             return True
@@ -212,4 +217,13 @@ class Checkers:
         if not self.game_ended:
             self.turn = Player.BLACK if self.turn == Player.WHITE else Player.WHITE
 
-        
+
+
+class Tester:
+    def __init__(self):
+        game = Checkers()
+        game._setupBoard("pieces")
+        game.isFinished()
+
+
+Tester()
