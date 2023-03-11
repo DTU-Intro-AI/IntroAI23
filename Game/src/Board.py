@@ -25,6 +25,10 @@ class Checkers:
         self.turn = Player.BLACK
         self.game_ended = False
         self.win = Player.NONE
+        self.bs = None
+        self.bks = None
+        self.ws = None
+        self.wks = None
 
     def _create_place_piece(self, piece, cord):
         if piece == "w":
@@ -41,6 +45,10 @@ class Checkers:
 
     def _setupBoard(self, init_type):
         if init_type.lower() == "pieces":
+            self.bs = 12
+            self.bks = 0
+            self.ws = 12
+            self.wks = 0
             for i in range(BOARD_DIM):
                 for j in range(BOARD_DIM):
                     if (i+j)%2 == 0:
@@ -53,6 +61,10 @@ class Checkers:
                     else:
                         self.board[i][j] = Pieces.EMPTY
         elif init_type.lower() == "clear":
+            self.bs = 0
+            self.bks = 0
+            self.ws = 0
+            self.wks = 0
             for i in range(BOARD_DIM):
                 for j in range(BOARD_DIM):
                     self.board[i][j] = Pieces.EMPTY
@@ -203,6 +215,14 @@ class Checkers:
             if abs(x_last-x_to) > 1 and abs(y_last-y_to) > 1:
                 index_x = int(last_cord[0] + abs(current_cord[0]-last_cord[0])/(current_cord[0]-last_cord[0]))
                 index_y = int(last_cord[1] + abs(current_cord[1]-last_cord[1])/(current_cord[1]-last_cord[1]))
+                if self.board[index_x][index_y] == Pieces.BLACK:
+                    self.bs = self.bs - 1
+                elif self.board[index_x][index_y] == Pieces.BLACK_KING:
+                    self.bks = self.bks - 1
+                elif self.board[index_x][index_y] == Pieces.WHITE:
+                    self.ws = self.ws - 1
+                elif self.board[index_x][index_y] == Pieces.WHITE_KING:
+                    self.wks = self.wks - 1
                 self.board[index_x][index_y] = Pieces.EMPTY # Removes pieces that has been skipped over
 
             if self.turn == Player.WHITE and x_to == 7:
