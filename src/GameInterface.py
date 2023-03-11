@@ -4,9 +4,13 @@ checkers = Checkers()
 
 print("Welcome to Checkers!")
 print("Instructions: ...")
+success = True
 while (not checkers.isFinished()):
-    print("{}'s turn!".format(checkers.get_turn()))
-    checkers.printBoard()
+    if (not success):
+        print("Invalid move! Try again:")
+    else:
+        checkers.printBoard()
+        print("{}'s turn!".format(checkers.get_turn()))
     print("What piece would you like to move?")
     from_x = input("    enter x cord: ")
     from_y = input("    enter y cord: ")
@@ -15,7 +19,7 @@ while (not checkers.isFinished()):
     to_y = input("  enter y cord: ")
     
     print("{} moving from ({}, {}) to ({}, {})".format(checkers.get_turn(), from_x, from_y, to_x, to_y))
-    checkers.move((from_x, from_y), [(to_x, to_y)])
+    success = checkers.move((from_x, from_y), [(to_x, to_y)])
 
 print("Game over! {} won!!")
 
